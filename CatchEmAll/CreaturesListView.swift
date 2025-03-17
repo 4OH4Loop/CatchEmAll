@@ -37,6 +37,11 @@ struct CreaturesListView: View {
                     Text("\(creatures.creaturesArray.count) of \(creatures.count) creatures")
                 }
             }
+            if creatures.isLoading {
+                ProgressView()
+                    .tint(.red)
+                    .scaleEffect(4)
+            }
         }
         .task {
             await creatures.getData()
