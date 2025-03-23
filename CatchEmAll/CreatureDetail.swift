@@ -17,6 +17,19 @@ class CreatureDetail {
     
     struct Sprite: Codable {
         var front_default: String
+        var other: Other
+    }
+    
+    struct Other: Codable {
+        var officialArtwork: OfficialArtwork
+        
+        enum CodingKeys: String, CodingKey {
+            case officialArtwork = "official-artwork"
+        }
+    }
+    
+    struct OfficialArtwork: Codable {
+        var front_default: String? // This might return null, which is nil in Swift
     }
     
     var urlString = "" // update with string passed
@@ -28,20 +41,22 @@ class CreatureDetail {
         print("🕸️We are accessing the url \(urlString)")
         // convert urlString to a special URL type
         guard let url = URL(string: urlString) else {
-            print("ERROR: Could not create a URL from \(urlString)")
+            print("😡 ERROR: Could not create a URL from \(urlString)")
             return
         }
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             // Try to decode JSON data into our own data structures
             guard let returned = try? JSONDecoder().decode(Returned.self, from: data) else {
+                print("😡 JSON ERROR: Could not decode returned JSON data")
+                print("data: \(data)")
                 return
             }
             self.height = returned.height
             self.weight = returned.weight
-            self.imageURL = returned.sprites.front_default
+            self.imageURL = returned.sprites.other.officialArtwork.front_default ?? "n/a"
         } catch {
-            print("ERROR: Could not create a URL from \(urlString)")
+            print("😡 ERROR: Could not get data from \(urlString)")
         }
     }
 }
