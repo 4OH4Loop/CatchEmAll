@@ -16,7 +16,6 @@ class CreatureDetail {
     }
     
     struct Sprite: Codable {
-        var front_default: String
         var other: Other
     }
     

@@ -14,12 +14,10 @@ class Creatures {
         var next: String?
         var results: [Creature]
     }
-    
-
-    
+        
     var urlString = "https://pokeapi.co/api/v2/pokemon/"
     var count = 0
-    var creaturesArray: [Creature] = []
+    var creaturesArray: [Creature] = [] 
     var isLoading = false
     
     func getData() async {
@@ -28,7 +26,7 @@ class Creatures {
         
         // convert urlString to a special URL type
         guard let url = URL(string: urlString) else {
-            print("ERROR: Could not create a URL from \(urlString)")
+            print("😡 ERROR: Could not create a URL from \(urlString)")
             isLoading = false
             return
         }
@@ -36,6 +34,8 @@ class Creatures {
             let (data, _) = try await URLSession.shared.data(from: url)
             // Try to decode JSON data into our own data structures
             guard let returned = try? JSONDecoder().decode(Returned.self, from: data) else {
+                print("😡 JSON ERROR: Could not decode return JSON data")
+                isLoading = false
                 return
             }
             Task { @MainActor in
@@ -45,12 +45,12 @@ class Creatures {
                 isLoading = false
             }
         } catch {
-            print("ERROR: Could not create a URL from \(urlString)")
+            print("😡 ERROR: Could not get data from \(urlString)")
             isLoading = false
         }
     }
     func loadNextIfNeeded(creature: Creature) async {
-        guard let lastCreature = creaturesArray.last else { return}
+        guard let lastCreature = creaturesArray.last else { return }
         if creature.id == lastCreature.id && urlString.hasPrefix("http") {
             await getData()
         }

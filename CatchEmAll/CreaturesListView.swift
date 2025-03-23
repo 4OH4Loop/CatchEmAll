@@ -13,39 +13,41 @@ struct CreaturesListView: View {
     
     var body: some View {
         NavigationStack {
-            List(searchResults) { creature in
-                LazyVStack {
-                    NavigationLink {
-                        DetailView(creature: creature)
-                    } label: {
-                        Text("\(returnIndex(of: creature)). \(creature.name.capitalized)")
-                            .font(.title2)
-                    }
-                }
-                .task {
-                    await creatures.loadNextIfNeeded(creature: creature)
-                }
-            }
-            .listStyle(.plain)
-            .navigationTitle("Pokemon")
-            .toolbar {
-                ToolbarItem(placement: .bottomBar) {
-                    Button("Load All") {
-                        Task {
-                            await creatures.loadAll()
+            ZStack {
+                List(searchResults) { creature in
+                    LazyVStack {
+                        NavigationLink {
+                            DetailView(creature: creature)
+                        } label: {
+                            Text("\(returnIndex(of: creature)). \(creature.name.capitalized)")
+                                .font(.title2)
                         }
                     }
+                    .task {
+                        await creatures.loadNextIfNeeded(creature: creature)
+                    }
                 }
-                ToolbarItem(placement: .status) {
-                    Text("\(creatures.creaturesArray.count) of \(creatures.count) creatures")
+                .listStyle(.plain)
+                .navigationTitle("Pokemon")
+                .toolbar {
+                    ToolbarItem(placement: .bottomBar) {
+                        Button("Load All") {
+                            Task {
+                                await creatures.loadAll()
+                            }
+                        }
+                    }
+                    ToolbarItem(placement: .status) {
+                        Text("\(creatures.creaturesArray.count) of \(creatures.count) creatures")
+                    }
                 }
-            }
-            .searchable(text: $searchText)
-            
-            if creatures.isLoading {
-                ProgressView()
-                    .tint(.red)
-                    .scaleEffect(4)
+                .searchable(text: $searchText)
+                
+                if creatures.isLoading {
+                    ProgressView()
+                        .tint(.red)
+                        .scaleEffect(4)
+                }
             }
         }
         .task {
